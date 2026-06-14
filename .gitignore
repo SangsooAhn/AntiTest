@@ -1,0 +1,4 @@
+﻿init_structure.ps1
+.DS_Store
+*.tmp
+Thumbs.db
