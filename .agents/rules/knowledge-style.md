@@ -5,35 +5,50 @@ trigger: always_on
 # 분산에너지 지식 통합 및 누적(Merge) 가이드라인
 
 ## 1. 활성화 조건
-- Always On (관점별 지식 통합 문서 생성 및 수정 시 항시 적용)
+- Always On (지식 통합 및 누적 문서 생성 및 수정 시 항시 적용)
 
 ## 2. 파일 생성 및 저장 규칙
-- 지식 통합 파일은 주제별 파일이 아니라, 네 가지 관점별로 단일화된 **관점별 명제 노트** 포맷으로 저장 및 누적한다.
-  - `knowledge/국가_관점.md`
-  - `knowledge/사업자_관점.md`
-  - `knowledge/소비자_관점.md`
-  - `knowledge/정책기관_관점.md`
-- 파일의 최상단에는 반드시 아래 규격의 YAML Frontmatter를 기입한다.
+
+### A. 명제 노트 (Propositions)
+- 명제 노트는 각 이해관계자 주체별로 단일화하여 `knowledge/propositions/` 폴더에 저장 및 누적한다. (파일명에서 "관점" 단어는 배제한다.)
+  - `knowledge/propositions/국가.md`
+  - `knowledge/propositions/사업자.md`
+  - `knowledge/propositions/소비자.md`
+  - `knowledge/propositions/정책기관.md`
+- 파일 최상단 YAML Frontmatter 규격:
   ```yaml
   ---
-  title: 관점명 지식 통합 (예: 국가 관점 지식 통합)
+  title: 주체명 명제 통합 (예: 국가 명제 통합)
   last_updated: YYYY-MM-DD
   tags: [태그1, 태그2]
   ---
   ```
-- `tags` 항목에는 반드시 `.agents/rules/tags.md`에 정의된 태그만 사용한다.
+
+### B. 사실관계 노트 (Facts)
+- 사실관계는 관점이 아닌 **중요 도메인 개념/기술/정책별**로 단일화하여 `knowledge/facts/` 폴더에 저장 및 누적한다.
+  - 예: `knowledge/facts/VPP.md`, `knowledge/facts/분산법.md`, `knowledge/facts/요금제.md`, `knowledge/facts/실증사업.md`, `knowledge/facts/DR.md`
+- 파일 최상단 YAML Frontmatter 규격:
+  ```yaml
+  ---
+  title: 중요 개념 사실 통합 (예: 가상발전소 VPP 사실 통합)
+  last_updated: YYYY-MM-DD
+  tags: [태그1, 태그2]
+  ---
+  ```
 
 ---
 
 ## 3. 지식 연결 및 병합(Merge) 프로세스
-에이전트는 새로운 기사/보고서 분석이 완료되면 다음 순서로 관점별 지식을 누적한다.
+에이전트는 새로운 기사/보고서 분석이 완료되면 다음 순서로 지식을 누적한다.
 
 1. **지식 지도(Index 노트) 조회**:
-   - 분석 시작 전, 전체 지식의 요약판인 [knowledge/README.md](file:///C:/Users/dl/.gemini/antigravity/worktrees/260614_github_news/inspect-repository-files/knowledge/README.md)를 조회하여 기존에 축적되어 있는 관점별 핵심 명제의 현황과 구조를 학습한다.
-2. **관점별 명제 노트 조회**:
-   - 기사에서 추출된 명제가 속한 관점별 명제 노트(`knowledge/관점명_관점.md`)를 열어 기존 축적 내역을 파악한다. (분석 결과 특정 관점의 내용이 없다면 해당 관점 노트는 건드리지 않는다.)
-3. **지식 병합(Merge) 수행**:
-   - 추출된 사실 관계와 명제를 아래 세부 규칙에 따라 해당 관점 노트에 병합하여 갱신한다.
+   - 분석 시작 전, 전체 지식의 요약판인 [knowledge/README.md](file:///C:/Users/dl/.gemini/antigravity/worktrees/260614_github_news/inspect-repository-files/knowledge/README.md)를 조회하여 기존에 축적되어 있는 명제 제목 리스트와 중요 개념별 사실 현황을 파악한다.
+2. **명제 유사도 비교 및 조기 차단 (토큰 효율화 핵심)**:
+   - 기사에서 추출한 명제의 요약 제목들을 Index 노트에 나열된 기존 명제 제목들과 대조한다.
+   - **유사 명제가 이미 존재할 경우**: 해당 명제 노트(`knowledge/propositions/주체.md`)는 열어보거나 수정하지 않고 스킵한다.
+   - **기존에 없던 신규 명제일 경우**: 해당 주체의 명제 노트를 열어 하단에 추가한다.
+3. **사실관계 병합**:
+   - 기사에서 획득된 Facts들의 주요 개념에 해당하는 Facts 파일(`knowledge/facts/개념명.md`)을 열어 병합한다.
 
 ---
 
@@ -52,31 +67,22 @@ trigger: always_on
   - [2026-06-14] 울산, 제주 등 주요 지자체들이 지역 전력거래 권한 선점을 위해 특구 유치 추진 발표. (출처: 전자신문)
   ```
 
-### B. 관점별 명제 (Propositions) 병합 및 구조화
+### B. 명제 (Propositions) 구조화
 - 명제는 주장하는 바가 명확히 드러나도록 **주요 키워드 3~5개 내외**를 사용하여 매우 간결한 제목 형태(`#### [키워드 요약 제목]`)로 작성하여 하단에 핵심을 기술한다.
 - 유사한 성격의 명제는 개별적으로 늘어놓지 말고 하나의 헤더 아래 통합하거나 보완 내역으로 기술한다.
 - 정책 변화 등으로 기존 명제가 수정되는 경우 이전 명제는 **취소선** 처리하고 변경 일자와 신규 명제를 추가한다.
-- 예시:
-  ```markdown
-  ### 2. 관점별 누적 명제 (Propositions)
-  
-  #### [지역 차등 요금 추진]
-  - 송배전 비용을 반영한 요금 차등화가 발의되어 수도권 집중 완화 기대. (2026-06-14 보완 - 자급률 고려 조항 신설)
-  ```
 
 ---
 
-## 5. 지식 통합 문서 필수 구조 및 스타일
+## 5. 지식 문서 필수 구조 및 스타일
 - **스타일 규정**: 문장은 명사형 종결 또는 간결체(예: '~함', '~임', '~됨')로 종결하며, 서술형 어미는 철저히 배제한다.
 
-# [지식 통합] 관점명 지식 통합
+# [지식 통합] 파일명 (예: [지식 통합] 국가 명제 / [지식 통합] VPP 사실)
 
 - **최종 갱신일:** YYYY-MM-DD
 - **핵심 태그:** #태그1, #태그2
 
-### 1. 누적 사실 관계 (Facts)
-- 유사 정보 단위로 그룹화된 사실 목록 (일자 명시)
+### 1. 누적 데이터 목록 (Facts의 경우 사실 목록, Propositions의 경우 명제 목록)
+- 가이드라인에 맞춘 누적 불릿 리스트
 
-### 2. 관점별 누적 명제 (Propositions)
-- 키워드 3~5개 내외의 간결한 제목 및 명제 리스트
 
